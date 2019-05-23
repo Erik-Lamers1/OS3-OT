@@ -30,8 +30,15 @@ def parse_args(args=None):
 
 
 def search_config_dir_for_totp_secrets(path):
+    possibilities = list()
     logger.info('Searching {} for TOTP secrets'.format(path))
-    return check_output('utils/find_totp_secrets.sh {}'.format(path), shell=True).decode('utf-8')
+    results = check_output('utils/find_totp_secrets.sh {}'.format(path), shell=True).decode('utf-8')
+    for line in results.splitlines():
+        possibilities.append({
+            'path': line.split(':')[0],
+            'secret': line.split(':')[0]
+        })
+    return possibilities
 
 
 def chrome_totp_search(override=None):
