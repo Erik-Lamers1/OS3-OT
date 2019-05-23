@@ -33,13 +33,15 @@ def search_config_dir_for_totp_secrets(path):
     possibilities = list()
     logger.info('Searching {} for TOTP secrets'.format(path))
     results = check_output('utils/find_totp_secrets.sh {}'.format(path), shell=True).decode('utf-8')
-    for line in results.splitlines():
+    # Skip first line
+    for line in results.splitlines()[1:]:
         possibilities.append({
             'path': line.split(':')[0],
-            'secret': line.split(':')[0]
+            'secret': line.split(':')[1]
         })
     return possibilities
 
+def get_applicable_files_from_results(results, extensions):
 
 def chrome_totp_search(override=None):
     path = override if override else GOOGLE_CHROME_CONFIG_DIR
@@ -61,3 +63,4 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
