@@ -6,6 +6,14 @@ from subprocess import check_output
 
 from settings import VALID_BROWSERS, GOOGLE_CHROME_CONFIG_DIR, MOZILLA_FIREFOX_CONFIG_DIR
 from utils.logger import configure_logging
+from utils.filesystem import get_json_from_file, read_lines_from_file
+
+"""
+This script will combine some bash commands to look for TOTP secrets in either Chrome or Firefox
+Only works with plain text TOTP codes atm.
+
+Author: Erik Lamers <erik.lamers@os3.nl>
+"""
 
 logger = configure_logging(__name__)
 
@@ -18,6 +26,8 @@ def parse_args(args=None):
                                         'valid options are {}'.format(', '.join(VALID_BROWSERS)))
 
     parser.add_argument('--override-config-dir', help='Override the default config dir for browser')
+    parser.add_argument('--override-search-extensions', nargs='*', help='A list of extension which to '
+                                                                        'consider for TOTP codes (separated by spaces)')
     parser.add_argument('-d', '--debug', action='store_true', help='Enable debug logging')
 
     args = parser.parse_args(args)
@@ -41,7 +51,19 @@ def search_config_dir_for_totp_secrets(path):
         })
     return possibilities
 
+
+def get_totp_codes_from_leveldb_file(path):
+    logger.info('Trying to import {}'.format(path))
+
+
+
 def get_applicable_files_from_results(results, extensions):
+    for path, secret in results.items():
+        # Split the path on . and get the last item
+        if path.split('.')[-1] in extensions:
+            logger.debug('{} has a valid extension looking for TOTP codes'.format(path))
+
+
 
 def chrome_totp_search(override=None):
     path = override if override else GOOGLE_CHROME_CONFIG_DIR
